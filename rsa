@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <math.h>
+
+/**
+ * is_prime - Checks if a number is prime.
+ * @num: The number to check.
+ *
+ * Return: 1 if the number is prime, 0 otherwise.
+ */
+int is_prime(unsigned long num)
+{
+	unsigned long i;
+
+	if (num <= 1)
+		return (0);
+	if (num == 2)
+		return (1);
+
+	for (i = 2; i * i <= num; i++)
+	{
+		if (num % i == 0)
+			return (0);
+	}
+
+	return (1);
+}
+
+/**
+ * rsa_factorize - Finds two prime factors of a number n.
+ * @n: The number to be factorized.
+ */
+void rsa_factorize(unsigned long n)
+{
+	unsigned long p, q;
+	unsigned long i;
+
+	/* Loop through numbers from 2 to sqrt(n) to find factors */
+	for (i = 2; i * i <= n; i++)
+	{
+		if (n % i == 0) /* Check if i is a divisor */
+		{
+			p = i;
+			q = n / i;
+
+			/* Check if both p and q are prime */
+			if (is_prime(p) && is_prime(q))
+			{
+				printf("%lu=%lu*%lu\n", n, q, p);
+				return;
+			}
+		}
+	}
+}
+
+int main(int argc, char *argv[])
+{
+	unsigned long n;
+	FILE *fp;
+
+	/* Check for the correct number of arguments */
+	if (argc != 2)
+	{
+		fprintf(stderr, "Usage: %s <file>\n", argv[0]);
+		return (1);
+	}
+
+	/* Open the file containing the number */
+	fp = fopen(argv[1], "r");
+	if (!fp)
+	{
+		fprintf(stderr, "Error: Unable to open file %s\n", argv[1]);
+		return (1);
+	}
+
+	/* Read the number from the file */
+	if (fscanf(fp, "%lu", &n) != 1)
+	{
+		fprintf(stderr, "Error: Invalid number in file %s\n", argv[1]);
+		fclose(fp);
+		return (1);
+	}
+
+	/* Close the file */
+	fclose(fp);
+
+	/* Factorize the number */
+	rsa_factorize(n);
+
+	return (0);
+}
+
