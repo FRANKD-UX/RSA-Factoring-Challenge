@@ -9,20 +9,20 @@
  * Description: This function takes a natural number and outputs the product
  * of two smaller numbers (p and q) such that n = p * q.
  */
-void factorize(unsigned long long n)
+void factorize(unsigned long n)
 {
-	unsigned long long p, q;
+	unsigned long p, q;
 
 	for (p = 2; p <= n / 2; p++)
 	{
 		if (n % p == 0)
 		{
 			q = n / p;
-			printf("%llu=%llu*%llu\n", n, q, p);
+			printf("%lu=%lu*%lu\n", n, q, p);
 			return;
 		}
 	}
-	printf("%llu=%llu*1\n", n, n);
+	printf("%lu=%lu*1\n", n, n);
 }
 
 /**
@@ -38,7 +38,7 @@ void factorize(unsigned long long n)
 int main(int argc, char *argv[])
 {
 	FILE *file;
-	unsigned long long num;
+	unsigned long num;
 
 	if (argc != 2)
 	{
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		return (1);
 	}
 
-	while (fscanf(file, "%llu", &num) != EOF)
+	while (fscanf(file, "%lu", &num) != EOF)
 	{
 		factorize(num);
 	}
