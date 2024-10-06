@@ -4,10 +4,10 @@
 #include "main.h"
 
 /**
- * gcd - Computes the greatest common divisor using Euclid's algorithm
- * @a: First number
- * @b: Second number
- * Return: The GCD of a and b
+ * gcd - Computes the greatest common divisor using the Euclidean algorithm.
+ * @a: The first number.
+ * @b: The second number.
+ * Return: The GCD of a and b.
  */
 unsigned long gcd(unsigned long a, unsigned long b)
 {
@@ -21,13 +21,14 @@ unsigned long gcd(unsigned long a, unsigned long b)
 }
 
 /**
- * pollard_rho - Pollard's Rho algorithm for factorization
- * @n: The number to be factorized
- * Return: A non-trivial factor of n
+ * pollard_rho - Pollard's Rho algorithm for integer factorization.
+ * @n: The number to be factored.
+ * Return: A non-trivial factor of n.
  */
 unsigned long pollard_rho(unsigned long n)
 {
-    unsigned long x, y, d, one = 1, two = 2;
+    unsigned long x, y, d;
+    unsigned long one = 1, two = 2;
 
     if (n % two == 0)
         return two;
@@ -46,6 +47,11 @@ unsigned long pollard_rho(unsigned long n)
 
         if (d > 1 && d < n)
             return d;  // Found a non-trivial factor
+
+        // Randomly adjust constant `c` occasionally to improve chances
+        if (rand() % 100 < 10) {  // 10% chance to change c
+            c = rand() % (n - 1) + 1;
+        }
     } while (d == 1);
 
     return d;  // Should not reach here
@@ -53,59 +59,40 @@ unsigned long pollard_rho(unsigned long n)
 
 /**
  * factorize - Finds and prints the factorization of a number
- * @n: The number to be factorized
+ *             in the format n=p*q where p > q.
+ * @n: The number to be factorized.
  */
 void factorize(unsigned long n)
 {
     unsigned long p, q;
 
-    // Try Pollard's rho algorithm
+    // Use Pollard's Rho algorithm to find a factor
     p = pollard_rho(n);
-    if (p == n)  // If no factor found, n is prime
+    if (p != n)  // If a non-trivial factor is found
     {
-        printf("%lu=%lu*1\n", n, n);
-        return;
+        q = n / p;
+        printf("%lu=%lu*%lu\n", n, p, q);
     }
-    q = n / p;
-
-    // Print the factorization
-    printf("%lu=%lu*%lu\n", n, (p > q) ? p : q, (p > q) ? q : p);
+    else
+    {
+        // If no factors were found, n is prime
+        printf("%lu=%lu*1\n", n, n);
+    }
 }
 
 /**
- * main - Entry point of the program
- * @argc: Number of command line arguments
- * @argv: Array of arguments
- * Return: 0 on success
+ * main - Entry point for the program.
  */
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-    unsigned long n;
-    FILE *file;
-    char buffer[1024];
-
     if (argc != 2)
     {
-        fprintf(stderr, "Usage: %s <file>\n", argv[0]);
-        return (1);
+        fprintf(stderr, "Usage: %s <number>\n", argv[0]);
+        return 1;
     }
 
-    // Open the file
-    file = fopen(argv[1], "r");
-    if (file == NULL)
-    {
-        perror("Error opening file");
-        return (1);
-    }
-
-    // Read numbers from the file
-    while (fgets(buffer, sizeof(buffer), file) != NULL)
-    {
-        n = strtoul(buffer, NULL, 10);
-        factorize(n);
-    }
-
-    fclose(file);
-    return (0);
+    unsigned long n = strtoul(argv[1], NULL, 10);
+    factorize(n);
+    return 0;
 }
 
